@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "Si utiliza MineFleet Perú en una investigación, cite esta versión del software."
+title: "MineFleet Perú"
+type: software
+authors:
+  - family-names: "Ticona Moscoso"
+    given-names: "Gerardo Rodney"
+repository-code: "https://github.com/G3RARD0-TICONA/minefleet-peru"
+url: "https://github.com/G3RARD0-TICONA/minefleet-peru"
+version: "0.2.0-alpha"
+date-released: "2026-08-15"
+license: MIT
+keywords:
+  - transporte minero
+  - cumplimiento documental
+  - flota vehicular
+  - minería peruana
+  - Django
