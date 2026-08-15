@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow">REGISTRO CONTROLADO</div><h1>{{ title }}</h1>{% if help_text %}<p>{{ help_text }}</p>{% endif %}</div></div>
+<form method="post" enctype="multipart/form-data" class="panel form-grid">{% csrf_token %}
+  {% for field in form %}<div class="field {% if field.field.widget.input_type == 'checkbox' %}checkbox{% endif %}"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</div>{% endfor %}
+  {% if form.non_field_errors %}<div class="message error">{{ form.non_field_errors }}</div>{% endif %}
+  <div class="form-actions"><a class="button" href="javascript:history.back()">Cancelar</a><button class="button primary" type="submit">Guardar</button></div>
+</form>
+{% endblock %}

@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.py[cod]
+db.sqlite3
+.env
+media/
+staticfiles/
+.coverage
+.pytest_cache/
+*.log
+~$*.xlsx
+~$*.docx

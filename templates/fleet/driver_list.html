@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow">CONDUCTORES Y PERSONAL</div><h1>Conductores</h1></div><a class="button primary" href="{% url 'driver_create' %}">Nuevo conductor</a></div>
+<section class="panel"><table><thead><tr><th>Documento</th><th>Conductor</th><th>Licencia</th><th>Vencimiento</th><th>Experiencia minera</th><th>Aptitud</th></tr></thead><tbody>
+{% for driver in drivers %}<tr><td>{{ driver.document_number }}</td><td><strong>{{ driver.full_name }}</strong></td><td>{{ driver.license_number }} · {{ driver.license_category }}</td><td>{{ driver.license_expiry }}</td><td>{{ driver.mining_experience_years }} años</td><td>{% if driver.is_authorized %}<span class="badge valid">Autorizable</span>{% else %}<span class="badge expired">No autorizable</span>{% endif %}</td></tr>{% empty %}<tr><td colspan="6">No hay conductores registrados.</td></tr>{% endfor %}
+</tbody></table></section>
+{% endblock %}

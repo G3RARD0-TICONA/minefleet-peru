@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow">{{ membership.company }}</div><h1>Panel de control</h1><p>Estado documental consolidado de la flota.</p></div><span class="role">{{ membership.get_role_display }}</span></div>
+<section class="metrics">
+  <article><strong>{{ vehicles }}</strong><span>Vehículos</span></article>
+  <article class="ok"><strong>{{ eligible }}</strong><span>Aptos documentales</span></article>
+  <article class="warn"><strong>{{ expiring }}</strong><span>Por vencer ≤30 días</span></article>
+  <article class="danger"><strong>{{ expired }}</strong><span>Vencidos</span></article>
+  <article><strong>{{ blocked }}</strong><span>Bloqueados / taller</span></article>
+</section>
+<div class="grid-2">
+  <section class="panel"><div class="panel-head"><h2>Alertas documentarias</h2><a href="{% url 'vehicle_list' %}">Ver flota</a></div>
+    <table><thead><tr><th>Placa</th><th>Documento</th><th>Vencimiento</th><th>Estado</th></tr></thead><tbody>
+    {% for item in alerts %}<tr><td><a href="{% url 'vehicle_detail' item.vehicle_id %}">{{ item.vehicle.plate }}</a></td><td>{{ item.get_document_type_display }}</td><td>{{ item.expiry_date|default:"Sin fecha" }}</td><td><span class="badge {{ item.status|lower }}">{{ item.get_status_display }}</span></td></tr>{% empty %}<tr><td colspan="4">No existen alertas.</td></tr>{% endfor %}
+    </tbody></table>
+  </section>
+  <section class="panel"><h2>Actividad reciente</h2><ul class="timeline">{% for item in audit %}<li><strong>{{ item.action }}</strong> {{ item.entity }} <small>{{ item.created_at }} · {{ item.user|default:"Sistema" }}</small></li>{% empty %}<li>Aún no existen movimientos.</li>{% endfor %}</ul></section>
+</div>
+{% endblock %}

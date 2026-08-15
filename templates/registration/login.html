@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Ingresar · MineFleet Perú{% endblock %}
+{% block content %}
+<section class="login-card">
+  <div class="eyebrow">CONTROL DOCUMENTAL DE FLOTA</div>
+  <h1>Ingresar a MineFleet Perú</h1>
+  <p>Organiza vehículos, conductores, evidencias y vencimientos en un expediente trazable.</p>
+  {% if form.errors %}<div class="message error">Usuario o contraseña incorrectos.</div>{% endif %}
+  <form method="post" class="stack">{% csrf_token %}
+    <label>Usuario {{ form.username }}</label>
+    <label>Contraseña {{ form.password }}</label>
+    <button class="button primary" type="submit">Ingresar</button>
+  </form>
+</section>
+{% endblock %}

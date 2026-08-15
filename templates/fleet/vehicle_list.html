@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow">MAESTRO SUNARP Y FLOTA</div><h1>Vehículos</h1></div><div class="actions"><a class="button" href="{% url 'vehicle_template' %}">Plantilla Excel</a><a class="button" href="{% url 'vehicle_import' %}">Importar</a><a class="button primary" href="{% url 'vehicle_create' %}">Nuevo vehículo</a></div></div>
+<form class="search"><input name="q" value="{{ query }}" placeholder="Buscar por placa"><button>Buscar</button></form>
+<section class="panel"><table><thead><tr><th>Placa</th><th>Unidad</th><th>Tara</th><th>PBV</th><th>Carga útil</th><th>Estado</th></tr></thead><tbody>
+{% for vehicle in vehicles %}<tr><td><a href="{% url 'vehicle_detail' vehicle.pk %}"><strong>{{ vehicle.plate }}</strong></a></td><td>{{ vehicle.brand }} {{ vehicle.model }} · {{ vehicle.year }}</td><td>{{ vehicle.tare_kg }} kg</td><td>{{ vehicle.gross_weight_kg }} kg</td><td>{{ vehicle.payload_kg }} kg</td><td><span class="badge {{ vehicle.status|lower }}">{{ vehicle.get_status_display }}</span></td></tr>{% empty %}<tr><td colspan="6">No hay vehículos registrados.</td></tr>{% endfor %}
+</tbody></table></section>
+{% endblock %}
