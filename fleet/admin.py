@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Driver, Vehicle, VehicleAssignment, VehicleDocument
+from .models import ClientProfile, Driver, DriverCredential, RequirementRule, Vehicle, VehicleAssignment, VehicleDocument
 
 
 class VehicleDocumentInline(admin.TabularInline):
@@ -25,5 +25,8 @@ class DriverAdmin(admin.ModelAdmin):
 
 admin.site.register(VehicleDocument)
 admin.site.register(VehicleAssignment)
+admin.site.register(ClientProfile)
+admin.site.register(RequirementRule)
+admin.site.register(DriverCredential)
 
 # Register your models here.

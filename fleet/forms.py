@@ -1,6 +1,7 @@
 from django import forms
 
 from .models import Driver, Vehicle, VehicleAssignment, VehicleDocument
+from .validators import validate_excel_import
 
 
 class DateInput(forms.DateInput):
@@ -17,13 +18,18 @@ class StyledModelForm(forms.ModelForm):
 class VehicleForm(StyledModelForm):
     class Meta:
         model = Vehicle
-        exclude = ("company", "payload_kg")
+        exclude = ("company", "payload_kg", "status")
+
+    def __init__(self, *args, company=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if company:
+            self.fields["client_profile"].queryset = company.client_profiles.filter(active=True)
 
 
 class VehicleDocumentForm(StyledModelForm):
     class Meta:
         model = VehicleDocument
-        exclude = ("vehicle", "reviewed_at")
+        exclude = ("vehicle", "reviewed_at", "reviewed_by", "uploaded_by", "sha256", "original_filename", "status", "is_blocking")
         widgets = {"issue_date": DateInput(), "expiry_date": DateInput()}
 
 
@@ -32,6 +38,11 @@ class DriverForm(StyledModelForm):
         model = Driver
         exclude = ("company",)
         widgets = {"license_expiry": DateInput(), "medical_expiry": DateInput()}
+
+    def __init__(self, *args, company=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if company:
+            self.fields["client_profile"].queryset = company.client_profiles.filter(active=True)
 
 
 class AssignmentForm(StyledModelForm):
@@ -48,4 +59,4 @@ class AssignmentForm(StyledModelForm):
 
 
 class ImportVehiclesForm(forms.Form):
-    file = forms.FileField(label="Archivo Excel (.xlsx)")
+    file = forms.FileField(label="Archivo Excel (.xlsx)", validators=[validate_excel_import])

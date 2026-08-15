@@ -5,12 +5,12 @@ from django.db import transaction
 from openpyxl import Workbook, load_workbook
 
 from core.models import AuditLog
-from .models import Vehicle, VehicleDocument
+from .models import ClientProfile, Vehicle, VehicleDocument
 
 
 VEHICLE_HEADERS = [
     "placa", "vin", "motor", "marca", "modelo", "año", "tipo", "modalidad",
-    "propietario", "tara_kg", "pbv_kg", "kilometraje", "estado",
+    "propietario", "tara_kg", "pbv_kg", "kilometraje", "estado_operativo", "perfil_cliente",
 ]
 
 
@@ -43,7 +43,8 @@ def import_vehicles(*, workbook_file, company, user):
                 "availability": str(data["modalidad"] or Vehicle.Availability.OWNED).strip().upper(),
                 "owner_name": str(data["propietario"]).strip(), "tare_kg": data["tara_kg"],
                 "gross_weight_kg": data["pbv_kg"], "odometer_km": int(data["kilometraje"] or 0),
-                "status": str(data["estado"] or Vehicle.Status.DRAFT).strip().upper(),
+                "operational_status": str(data["estado_operativo"] or Vehicle.OperationalStatus.AVAILABLE).strip().upper(),
+                "client_profile": ClientProfile.objects.get(company=company, name=str(data["perfil_cliente"]).strip(), active=True),
             }
             vehicle, was_created = Vehicle.objects.update_or_create(
                 company=company, plate=str(data["placa"]).strip().upper(), defaults=defaults,
@@ -61,7 +62,7 @@ def vehicle_template():
     sheet = workbook.active
     sheet.title = "Vehiculos"
     sheet.append(VEHICLE_HEADERS)
-    sheet.append(["V0X-001", "1MNFLEETDEMO0001", "MTR-DEMO-01", "Volvo", "FMX", 2023, "Volquete", "OWNED", "Transportes Demo SAC", 15000, 41000, 25000, "DRAFT"])
+    sheet.append(["V0X-001", "1MNFLEETD3M000001", "MTR-DEMO-01", "Volvo", "FMX", 2023, "Volquete", "OWNED", "Transportes Demo SAC", 15000, 41000, 25000, "AVAILABLE", "Perfil Minero Referencial"])
     for cell in sheet[1]:
         cell.font = cell.font.copy(bold=True, color="FFFFFF")
         cell.fill = cell.fill.copy(fill_type="solid", fgColor="17324D")
@@ -80,6 +81,8 @@ def refresh_document_alerts(company):
         if new_status != document.status:
             VehicleDocument.objects.filter(pk=document.pk).update(status=new_status)
             changed += 1
+    for vehicle in Vehicle.objects.filter(company=company).select_related("client_profile"):
+        vehicle.evaluate_compliance(persist=True)
     return changed
 
 
