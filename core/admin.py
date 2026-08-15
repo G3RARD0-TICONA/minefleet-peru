@@ -21,4 +21,13 @@ class AuditLogAdmin(admin.ModelAdmin):
     list_filter = ("action", "entity")
     readonly_fields = ("company", "user", "action", "entity", "object_id", "detail", "created_at")
 
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 # Register your models here.

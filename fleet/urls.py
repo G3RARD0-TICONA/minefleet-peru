@@ -10,6 +10,8 @@ urlpatterns = [
     path("vehiculos/plantilla/", views.download_vehicle_template, name="vehicle_template"),
     path("vehiculos/<int:pk>/", views.vehicle_detail, name="vehicle_detail"),
     path("vehiculos/<int:vehicle_pk>/documentos/nuevo/", views.document_create, name="document_create"),
+    path("documentos/<int:pk>/descargar/", views.download_document, name="document_download"),
     path("conductores/", views.driver_list, name="driver_list"),
     path("conductores/nuevo/", views.driver_create, name="driver_create"),
+    path("empresa/cambiar/", views.switch_company, name="switch_company"),
 ]

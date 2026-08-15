@@ -41,7 +41,7 @@ class Membership(models.Model):
 
 
 class AuditLog(models.Model):
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
+    company = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     action = models.CharField(max_length=30)
     entity = models.CharField(max_length=80)
@@ -54,5 +54,13 @@ class AuditLog(models.Model):
 
     def __str__(self):
         return f"{self.created_at:%Y-%m-%d %H:%M} {self.action} {self.entity}"
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            raise ValueError("La bitácora es inmutable y no admite modificaciones.")
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        raise ValueError("La bitácora es inmutable y no admite eliminaciones.")
 
 # Create your models here.

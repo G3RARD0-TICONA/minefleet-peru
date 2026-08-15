@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 
+from django.core.exceptions import ImproperlyConfigured
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,10 +23,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("MINEFLEET_SECRET_KEY", "dev-only-change-before-production")
+ENVIRONMENT = os.environ.get("MINEFLEET_ENV", "development").lower()
+PRODUCTION = ENVIRONMENT == "production"
+SECRET_KEY = os.environ.get("MINEFLEET_SECRET_KEY", "")
+if PRODUCTION and not SECRET_KEY:
+    raise ImproperlyConfigured("MINEFLEET_SECRET_KEY es obligatoria en producción.")
+if not SECRET_KEY:
+    SECRET_KEY = "development-only-not-for-production"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("MINEFLEET_DEBUG", "1") == "1"
+DEBUG = os.environ.get("MINEFLEET_DEBUG", "0" if PRODUCTION else "1") == "1"
 
 ALLOWED_HOSTS = [host for host in os.environ.get("MINEFLEET_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",") if host]
 
@@ -48,6 +56,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'core.audit.AuditContextMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -64,6 +73,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'core.context_processors.company_context',
             ],
         },
     },
@@ -121,6 +131,29 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Los archivos de evidencia nunca se publican directamente desde MEDIA_URL.
+# Se entregan por una vista autenticada con control de empresa y auditoría.
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
+DATA_UPLOAD_MAX_MEMORY_SIZE = 12 * 1024 * 1024
+
+SESSION_COOKIE_HTTPONLY = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+SECURE_REFERRER_POLICY = "same-origin"
+
+if PRODUCTION:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = int(os.environ.get("MINEFLEET_HSTS_SECONDS", "31536000"))
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+CSRF_TRUSTED_ORIGINS = [
+    origin for origin in os.environ.get("MINEFLEET_CSRF_TRUSTED_ORIGINS", "").split(",") if origin
+]
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'

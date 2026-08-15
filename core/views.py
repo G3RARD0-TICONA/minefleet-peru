@@ -1,3 +1,1 @@
-from django.shortcuts import render
-
-# Create your views here.
+"""Las vistas de negocio se encuentran en la aplicación fleet."""

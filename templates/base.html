@@ -17,6 +17,7 @@
       <a href="{% url 'driver_list' %}">Conductores</a>
       <a href="/admin/">Administración</a>
     </nav>
+    {% if memberships|length > 1 %}<form method="post" action="{% url 'switch_company' %}" class="company-switch">{% csrf_token %}<select name="company_id" onchange="this.form.submit()">{% for item in memberships %}<option value="{{ item.company_id }}" {% if item.company_id == membership.company_id %}selected{% endif %}>{{ item.company }}</option>{% endfor %}</select></form>{% endif %}
     <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="link-button">Salir</button></form>
     {% endif %}
   </header>
@@ -24,6 +25,6 @@
     {% if messages %}<section class="messages">{% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}</section>{% endif %}
     {% block content %}{% endblock %}
   </main>
-  <footer>Prototipo de investigación · No constituye homologación minera automática</footer>
+  <footer>Prototipo de investigación independiente · No afiliado ni aprobado por empresas mineras · No constituye homologación, certificación ni autorización de ingreso</footer>
 </body>
 </html>
