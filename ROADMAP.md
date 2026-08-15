@@ -1,6 +1,6 @@
 # Hoja de ruta
 
-- 0.2: interfaz de perfiles y credenciales, mantenimiento y asignaciones.
+- 0.2 estable: interfaz de perfiles y credenciales, mantenimiento y asignaciones.
 - 0.3: IPERC, incidentes, acciones CAPA y controles ambientales.
 - 0.4: rutas, combustible, conciliación y órdenes de compra.
 - 0.5: API, PostgreSQL, almacenamiento privado y despliegue piloto.
