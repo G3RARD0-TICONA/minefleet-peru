@@ -1,4 +1,4 @@
 -r requirements.txt
 coverage==7.10.4
 ruff==0.12.9
-pip-audit==2.9.0
+pip-audit==2.10.1
